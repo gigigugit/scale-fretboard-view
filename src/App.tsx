@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { VisualFretboard } from "@/components/VisualFretboard";
 import { TextOutput, generateTextForExport } from "@/components/TextOutput";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/sonner";
-import { Copy, Download, ArrowCounterClockwise } from "@phosphor-icons/react";
+import { Copy, Download, ArrowCounterClockwise, ArrowsVertical, ArrowsHorizontal } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import {
   INSTRUMENTS,
@@ -20,10 +20,12 @@ import {
   InstrumentName,
   ScaleName,
 } from "@/lib/music-data";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type DisplayMode = "fret" | "note" | "interval";
 
 function App() {
+  const isMobile = useIsMobile();
   const [instrument, setInstrument] = useState<InstrumentName>("Guitar");
   const [tuningName, setTuningName] = useState("Standard");
   const [key, setKey] = useState("C");
@@ -43,6 +45,11 @@ function App() {
   const [lowString, setLowString] = useState(1);
   const [highString, setHighString] = useState(6);
   const [maxFret, setMaxFret] = useState(18);
+  const [verticalLayout, setVerticalLayout] = useState(isMobile);
+
+  useEffect(() => {
+    setVerticalLayout(isMobile);
+  }, [isMobile]);
 
   const currentInstrument = INSTRUMENTS[instrument];
   const tuning = currentInstrument.tunings[tuningName as keyof typeof currentInstrument.tunings] || 
@@ -153,43 +160,68 @@ function App() {
     setLowString(1);
     setHighString(6);
     setMaxFret(18);
+    setVerticalLayout(isMobile);
     toast.info("Reset to defaults");
   };
 
   return (
-    <div className="min-h-screen bg-background p-2 md:p-4">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <Toaster />
-      <div className="max-w-[1600px] mx-auto space-y-3">
-        <header className="text-center space-y-1 py-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
-            Scale Fretboard Viewer
-          </h1>
-          <p className="text-xs md:text-sm text-muted-foreground">
-            {key} {scale} | {instrument}: {tuningName}
-          </p>
-        </header>
+      
+      <header className="text-center space-y-1 py-2 px-2 flex-shrink-0">
+        <h1 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
+          Scale Fretboard Viewer
+        </h1>
+        <p className="text-xs md:text-sm text-muted-foreground">
+          {key} {scale} | {instrument}: {tuningName}
+        </p>
+      </header>
 
-        <Card>
-          <CardContent className="p-3 md:p-4">
-            <VisualFretboard
-              tuning={tuning}
-              scaleNotes={scaleNotes}
-              activeDegrees={activeDegrees}
-              displayMode={displayMode}
-              startFret={startFret}
-              endFret={endFret}
-              lowString={lowString}
-              highString={highString}
-              maxFret={maxFret}
-            />
+      <div className="flex-1 flex flex-col min-h-0 px-2 md:px-4 pb-2 gap-2">
+        <Card className="flex-1 min-h-0 flex flex-col">
+          <CardContent className="p-2 md:p-4 flex-1 min-h-0 flex flex-col">
+            <div className="flex-1 min-h-0">
+              <VisualFretboard
+                tuning={tuning}
+                scaleNotes={scaleNotes}
+                activeDegrees={activeDegrees}
+                displayMode={displayMode}
+                startFret={startFret}
+                endFret={endFret}
+                lowString={lowString}
+                highString={highString}
+                maxFret={maxFret}
+                vertical={verticalLayout}
+              />
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="flex-shrink-0">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Controls</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-semibold">Controls</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs px-2"
+                onClick={() => setVerticalLayout(!verticalLayout)}
+              >
+                {verticalLayout ? (
+                  <>
+                    <ArrowsHorizontal className="mr-1" size={14} />
+                    Horizontal
+                  </>
+                ) : (
+                  <>
+                    <ArrowsVertical className="mr-1" size={14} />
+                    Vertical
+                  </>
+                )}
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-3 pt-0">
+          <CardContent className="space-y-3 pt-0 max-h-[40vh] overflow-y-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               <div className="space-y-1">
                 <Label htmlFor="instrument" className="text-xs">Instrument</Label>
@@ -398,28 +430,6 @@ function App() {
                 Reset
               </Button>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Text Output</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <TextOutput
-              tuning={tuning}
-              scaleNotes={scaleNotes}
-              activeDegrees={activeDegrees}
-              displayMode={displayMode}
-              startFret={startFret}
-              endFret={endFret}
-              lowString={lowString}
-              highString={highString}
-              instrumentName={instrument}
-              tuningName={tuningName}
-              keyName={key}
-              scaleName={scale}
-            />
           </CardContent>
         </Card>
       </div>

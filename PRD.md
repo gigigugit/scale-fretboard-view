@@ -41,11 +41,18 @@ This is a single-purpose tool with interconnected controls and dual output modes
 - **Success criteria**: Ranges validate correctly, string numbers stay within bounds, fretboard crops to selection
 
 ### Visual Fretboard Rendering
-- **Functionality**: Draw fretboard with strings, frets, markers, and active note positions
-- **Purpose**: Provide spatial/visual reference for scale patterns
-- **Trigger**: Any control change
-- **Progression**: Control changes → Calculate active positions → Render grid → Place markers → Label notes according to display mode
-- **Success criteria**: Strings display high-to-low, fret markers appear at 0,1,3,5,7,9,12,15,17, active positions show correct labels
+- **Functionality**: Draw fretboard with strings, frets, markers, and active note positions in horizontal or vertical orientation
+- **Purpose**: Provide spatial/visual reference for scale patterns optimized for different screen sizes
+- **Trigger**: Any control change or layout mode toggle
+- **Progression**: Control changes → Calculate active positions → Render grid → Place markers → Label notes according to display mode → Adapt orientation based on layout mode
+- **Success criteria**: Strings display high-to-low, fret markers appear at 0,1,3,5,7,9,12,15,17, active positions show correct labels, vertical mode displays fretboard rotated 90 degrees with strings arranged left-to-right
+
+### Layout Mode Toggle
+- **Functionality**: Switch between horizontal and vertical fretboard orientations
+- **Purpose**: Optimize viewing experience for mobile (vertical) and desktop (horizontal) devices
+- **Trigger**: User clicks layout toggle button or screen size changes
+- **Progression**: Click toggle → Fretboard re-renders in new orientation → Automatically defaults to vertical on mobile devices
+- **Success criteria**: Toggle button shows current mode, fretboard fills available viewport space, mobile devices default to vertical orientation
 
 ### Text/Tab Output
 - **Functionality**: Generate tablature-style text representation with header and fret markers
@@ -152,9 +159,10 @@ Key moments:
   - Button group gap: 2-3 (0.5-0.75rem / 8-12px)
 
 - **Mobile**:
-  - Controls: Stack vertically with full width inputs on <768px
-  - Fretboard: Allow horizontal scroll on narrow screens, maintain aspect ratio
-  - Text output: Full width with horizontal scroll for long lines
+  - Layout: Defaults to vertical fretboard orientation on screens <768px for optimal smartphone viewing
+  - Fretboard: Fills entire viewport height in vertical mode, allows scrolling for extended fret ranges
+  - Controls: Stack vertically with full width inputs, placed below fretboard in scrollable panel (max 40vh)
+  - Text output: Removed from mobile view to maximize fretboard space
+  - Layout toggle: Always visible to allow users to switch between orientations
   - Action buttons: Stack vertically or wrap on mobile
-  - Hide or collapse less critical controls on very small screens
   - Use bottom sheet or drawer for control panel on mobile if needed

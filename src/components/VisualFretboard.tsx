@@ -10,6 +10,7 @@ interface FretboardProps {
   lowString: number;
   highString: number;
   maxFret: number;
+  vertical?: boolean;
 }
 
 export function VisualFretboard({
@@ -22,6 +23,7 @@ export function VisualFretboard({
   lowString,
   highString,
   maxFret,
+  vertical = false,
 }: FretboardProps) {
   const displayedStrings = tuning
     .slice(lowString - 1, highString)
@@ -57,6 +59,64 @@ export function VisualFretboard({
   };
 
   const isFretMarked = (fret: number) => FRET_MARKERS.includes(fret);
+
+  if (vertical) {
+    return (
+      <div className="w-full h-full flex items-center justify-center overflow-auto">
+        <div className="inline-flex flex-col items-center p-4">
+          <div className="flex gap-2">
+            <div className="flex flex-row gap-2 items-start justify-center pl-6">
+              {displayedStrings.map((openNote, stringIndex) => (
+                <div key={stringIndex} className="w-12 flex flex-col items-center">
+                  <div className="text-foreground text-xs font-medium pb-2">
+                    {openNote}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {fretRange.map((fret, fretIndex) => (
+            <div key={fret} className="flex flex-row gap-2 min-h-[48px]">
+              <div className="w-6 flex items-center justify-center">
+                {isFretMarked(fret) && (
+                  <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-muted/50 text-muted-foreground text-[10px] font-medium">
+                    {fret}
+                  </div>
+                )}
+              </div>
+
+              {displayedStrings.map((_, stringIndex) => {
+                const { content, isActive } = getFretContent(stringIndex, fret);
+                return (
+                  <div
+                    key={stringIndex}
+                    className="relative w-12 flex items-center justify-center"
+                  >
+                    <div
+                      className={`absolute top-0 bottom-0 w-[2px] ${
+                        fret === 0 ? "bg-primary" : "bg-border"
+                      }`}
+                    />
+                    <div
+                      className={`absolute left-0 right-0 top-0 h-px bg-border ${
+                        fretIndex === 0 ? "opacity-100" : "opacity-50"
+                      }`}
+                    />
+                    {isActive && (
+                      <div className="relative z-10 flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-lg">
+                        {content}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full overflow-x-auto">
