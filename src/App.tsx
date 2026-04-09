@@ -65,13 +65,20 @@ function App() {
   };
 
   const handleScaleChange = (newScale: ScaleName) => {
+    const prevScaleLength = SCALES[scale].length;
     setScale(newScale);
     const newScaleLength = SCALES[newScale].length;
-    if (newScaleLength < 7) {
-      setActiveDegrees((prev) =>
-        prev.map((active, i) => (i < newScaleLength ? active : false))
-      );
-    }
+    setActiveDegrees((prev) =>
+      prev.map((active, i) => {
+        if (i >= newScaleLength) {
+          return false;
+        }
+        if (i >= prevScaleLength && i < newScaleLength) {
+          return true;
+        }
+        return active;
+      })
+    );
   };
 
   const toggleDegree = (index: number) => {
