@@ -150,230 +150,20 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <div className="min-h-screen bg-background p-2 md:p-4">
       <Toaster />
-      <div className="max-w-[1600px] mx-auto space-y-6">
-        <header className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-primary tracking-tight">
+      <div className="max-w-[1600px] mx-auto space-y-3">
+        <header className="text-center space-y-1 py-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
             Scale Fretboard Viewer
           </h1>
-          <p className="text-muted-foreground">
-            Visualize musical scales across stringed instruments
+          <p className="text-xs md:text-sm text-muted-foreground">
+            {key} {scale} | {instrument}: {tuningName}
           </p>
         </header>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Controls</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="instrument">Instrument</Label>
-                <Select value={instrument} onValueChange={(v) => handleInstrumentChange(v as InstrumentName)}>
-                  <SelectTrigger id="instrument">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(INSTRUMENTS).map((inst) => (
-                      <SelectItem key={inst} value={inst}>
-                        {inst}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="tuning">Tuning</Label>
-                <Select value={tuningName} onValueChange={setTuningName}>
-                  <SelectTrigger id="tuning">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(currentInstrument.tunings).map((tuning) => (
-                      <SelectItem key={tuning} value={tuning}>
-                        {tuning}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="key">Key</Label>
-                <Select value={key} onValueChange={setKey}>
-                  <SelectTrigger id="key">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {KEYS.map((k) => (
-                      <SelectItem key={k} value={k}>
-                        {k}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="scale">Scale</Label>
-                <Select value={scale} onValueChange={(v) => handleScaleChange(v as ScaleName)}>
-                  <SelectTrigger id="scale">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(SCALES).map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-3">
-              <Label>Display Mode</Label>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={displayMode === "fret" ? "default" : "secondary"}
-                  size="sm"
-                  onClick={() => setDisplayMode("fret")}
-                >
-                  Fret Number
-                </Button>
-                <Button
-                  variant={displayMode === "note" ? "default" : "secondary"}
-                  size="sm"
-                  onClick={() => setDisplayMode("note")}
-                >
-                  Note
-                </Button>
-                <Button
-                  variant={displayMode === "interval" ? "default" : "secondary"}
-                  size="sm"
-                  onClick={() => setDisplayMode("interval")}
-                >
-                  Interval
-                </Button>
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-3">
-              <Label>Visible Scale Degrees</Label>
-              <div className="flex flex-wrap gap-3">
-                {ROMAN_NUMERALS.map((numeral, index) => (
-                  <div key={numeral} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`degree-${index}`}
-                      checked={activeDegrees[index]}
-                      onCheckedChange={() => toggleDegree(index)}
-                      disabled={index >= scaleLength}
-                    />
-                    <Label
-                      htmlFor={`degree-${index}`}
-                      className={index >= scaleLength ? "text-muted-foreground" : ""}
-                    >
-                      {numeral}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="start-fret">Start Fret</Label>
-                <Input
-                  id="start-fret"
-                  type="number"
-                  min={0}
-                  max={maxFret}
-                  value={startFret}
-                  onChange={(e) => setStartFret(Math.max(0, Math.min(maxFret, parseInt(e.target.value) || 0)))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="end-fret">End Fret</Label>
-                <Input
-                  id="end-fret"
-                  type="number"
-                  min={0}
-                  max={maxFret}
-                  value={endFret}
-                  onChange={(e) => setEndFret(Math.max(startFret, Math.min(maxFret, parseInt(e.target.value) || 0)))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="high-string">High String</Label>
-                <Input
-                  id="high-string"
-                  type="number"
-                  min={1}
-                  max={stringCount}
-                  value={highString}
-                  onChange={(e) => setHighString(Math.max(lowString, Math.min(stringCount, parseInt(e.target.value) || 1)))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="low-string">Low String</Label>
-                <Input
-                  id="low-string"
-                  type="number"
-                  min={1}
-                  max={stringCount}
-                  value={lowString}
-                  onChange={(e) => setLowString(Math.max(1, Math.min(highString, parseInt(e.target.value) || 1)))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="max-fret">Max Fret</Label>
-                <Input
-                  id="max-fret"
-                  type="number"
-                  min={12}
-                  max={30}
-                  value={maxFret}
-                  onChange={(e) => setMaxFret(Math.max(12, Math.min(30, parseInt(e.target.value) || 18)))}
-                />
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={handleCopy} variant="default" size="sm">
-                <Copy className="mr-2" />
-                Copy
-              </Button>
-              <Button onClick={handleDownload} variant="default" size="sm">
-                <Download className="mr-2" />
-                Download
-              </Button>
-              <Button onClick={handleReset} variant="secondary" size="sm">
-                <ArrowCounterClockwise className="mr-2" />
-                Reset
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Visual Fretboard</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-4">
             <VisualFretboard
               tuning={tuning}
               scaleNotes={scaleNotes}
@@ -389,10 +179,226 @@ function App() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Text Output</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">Controls</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3 pt-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="space-y-1">
+                <Label htmlFor="instrument" className="text-xs">Instrument</Label>
+                <Select value={instrument} onValueChange={(v) => handleInstrumentChange(v as InstrumentName)}>
+                  <SelectTrigger id="instrument" className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(INSTRUMENTS).map((inst) => (
+                      <SelectItem key={inst} value={inst}>
+                        {inst}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="tuning" className="text-xs">Tuning</Label>
+                <Select value={tuningName} onValueChange={setTuningName}>
+                  <SelectTrigger id="tuning" className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(currentInstrument.tunings).map((tuning) => (
+                      <SelectItem key={tuning} value={tuning}>
+                        {tuning}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="key" className="text-xs">Key</Label>
+                <Select value={key} onValueChange={setKey}>
+                  <SelectTrigger id="key" className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {KEYS.map((k) => (
+                      <SelectItem key={k} value={k}>
+                        {k}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="scale" className="text-xs">Scale</Label>
+                <Select value={scale} onValueChange={(v) => handleScaleChange(v as ScaleName)}>
+                  <SelectTrigger id="scale" className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(SCALES).map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <Separator className="my-2" />
+
+            <div className="space-y-2">
+              <Label className="text-xs">Display Mode</Label>
+              <div className="flex flex-wrap gap-1">
+                <Button
+                  variant={displayMode === "fret" ? "default" : "secondary"}
+                  size="sm"
+                  className="h-7 text-xs px-2"
+                  onClick={() => setDisplayMode("fret")}
+                >
+                  Fret #
+                </Button>
+                <Button
+                  variant={displayMode === "note" ? "default" : "secondary"}
+                  size="sm"
+                  className="h-7 text-xs px-2"
+                  onClick={() => setDisplayMode("note")}
+                >
+                  Note
+                </Button>
+                <Button
+                  variant={displayMode === "interval" ? "default" : "secondary"}
+                  size="sm"
+                  className="h-7 text-xs px-2"
+                  onClick={() => setDisplayMode("interval")}
+                >
+                  Interval
+                </Button>
+              </div>
+            </div>
+
+            <Separator className="my-2" />
+
+            <div className="space-y-2">
+              <Label className="text-xs">Scale Degrees</Label>
+              <div className="flex flex-wrap gap-2">
+                {ROMAN_NUMERALS.map((numeral, index) => (
+                  <div key={numeral} className="flex items-center space-x-1">
+                    <Checkbox
+                      id={`degree-${index}`}
+                      checked={activeDegrees[index]}
+                      onCheckedChange={() => toggleDegree(index)}
+                      disabled={index >= scaleLength}
+                      className="h-3 w-3"
+                    />
+                    <Label
+                      htmlFor={`degree-${index}`}
+                      className={`text-xs cursor-pointer ${index >= scaleLength ? "text-muted-foreground" : ""}`}
+                    >
+                      {numeral}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-2" />
+
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
+              <div className="space-y-1">
+                <Label htmlFor="start-fret" className="text-xs">Start</Label>
+                <Input
+                  id="start-fret"
+                  type="number"
+                  min={0}
+                  max={maxFret}
+                  value={startFret}
+                  onChange={(e) => setStartFret(Math.max(0, Math.min(maxFret, parseInt(e.target.value) || 0)))}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="end-fret" className="text-xs">End</Label>
+                <Input
+                  id="end-fret"
+                  type="number"
+                  min={0}
+                  max={maxFret}
+                  value={endFret}
+                  onChange={(e) => setEndFret(Math.max(startFret, Math.min(maxFret, parseInt(e.target.value) || 0)))}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="high-string" className="text-xs">High</Label>
+                <Input
+                  id="high-string"
+                  type="number"
+                  min={1}
+                  max={stringCount}
+                  value={highString}
+                  onChange={(e) => setHighString(Math.max(lowString, Math.min(stringCount, parseInt(e.target.value) || 1)))}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="low-string" className="text-xs">Low</Label>
+                <Input
+                  id="low-string"
+                  type="number"
+                  min={1}
+                  max={stringCount}
+                  value={lowString}
+                  onChange={(e) => setLowString(Math.max(1, Math.min(highString, parseInt(e.target.value) || 1)))}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="max-fret" className="text-xs">Max</Label>
+                <Input
+                  id="max-fret"
+                  type="number"
+                  min={12}
+                  max={30}
+                  value={maxFret}
+                  onChange={(e) => setMaxFret(Math.max(12, Math.min(30, parseInt(e.target.value) || 18)))}
+                  className="h-8 text-xs"
+                />
+              </div>
+            </div>
+
+            <Separator className="my-2" />
+
+            <div className="flex flex-wrap gap-1">
+              <Button onClick={handleCopy} variant="default" size="sm" className="h-7 text-xs">
+                <Copy className="mr-1" size={14} />
+                Copy
+              </Button>
+              <Button onClick={handleDownload} variant="default" size="sm" className="h-7 text-xs">
+                <Download className="mr-1" size={14} />
+                Download
+              </Button>
+              <Button onClick={handleReset} variant="secondary" size="sm" className="h-7 text-xs">
+                <ArrowCounterClockwise className="mr-1" size={14} />
+                Reset
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">Text Output</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
             <TextOutput
               tuning={tuning}
               scaleNotes={scaleNotes}

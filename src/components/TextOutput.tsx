@@ -87,7 +87,7 @@ export function TextOutput({
 
   return (
     <div className="w-full">
-      <pre className="font-mono text-sm text-foreground bg-card p-6 rounded-lg border border-border overflow-x-auto whitespace-pre">
+      <pre className="font-mono text-[10px] md:text-xs text-foreground bg-secondary/30 p-3 md:p-4 rounded-lg border border-border overflow-x-auto whitespace-pre">
         {textContent}
       </pre>
     </div>

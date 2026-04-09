@@ -23,7 +23,6 @@ export function VisualFretboard({
   highString,
   maxFret,
 }: FretboardProps) {
-  const stringCount = tuning.length;
   const displayedStrings = tuning
     .slice(lowString - 1, highString)
     .reverse();
@@ -38,7 +37,6 @@ export function VisualFretboard({
   ): { content: string; isActive: boolean } => {
     const reversedIndex = highString - 1 - stringIndex;
     const openNote = tuning[reversedIndex];
-    const pitchIndex = tuning.indexOf(openNote);
     const fretNote = (pitchToIndex(openNote) + fret) % 12;
 
     const scaleIndex = scaleNotes.indexOf(fretNote);
@@ -63,52 +61,52 @@ export function VisualFretboard({
   return (
     <div className="w-full overflow-x-auto">
       <div className="inline-block min-w-full">
-        <div className="flex flex-col gap-1 p-6 bg-card rounded-lg border border-border">
-          <div className="flex items-center mb-2">
-            <div className="w-16 text-muted-foreground text-sm font-semibold">
-              String
-            </div>
-            {fretRange.map((fret) => (
-              <div
-                key={fret}
-                className="flex-1 min-w-[60px] text-center text-muted-foreground text-xs font-medium"
-              >
-                {isFretMarked(fret) && (
-                  <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-muted/50 text-muted-foreground">
-                    {fret}
-                  </div>
-                )}
+        <div className="flex gap-2 p-4">
+          <div className="flex flex-col gap-2 items-end justify-start pt-8">
+            {displayedStrings.map((openNote, stringIndex) => (
+              <div key={stringIndex} className="h-12 flex items-center">
+                <div className="text-foreground text-xs font-medium pr-2">
+                  {openNote}
+                </div>
               </div>
             ))}
           </div>
 
-          {displayedStrings.map((openNote, stringIndex) => (
-            <div key={stringIndex} className="flex items-center gap-2">
-              <div className="w-16 text-foreground text-sm font-medium">
-                {openNote}
+          {fretRange.map((fret, fretIndex) => (
+            <div key={fret} className="flex flex-col gap-2 min-w-[48px]">
+              <div className="h-6 flex items-center justify-center">
+                {isFretMarked(fret) && (
+                  <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-muted/50 text-muted-foreground text-[10px] font-medium">
+                    {fret}
+                  </div>
+                )}
               </div>
-              <div className="flex-1 flex items-center border-t-2 border-border">
-                {fretRange.map((fret) => {
-                  const { content, isActive } = getFretContent(stringIndex, fret);
-                  return (
+
+              {displayedStrings.map((_, stringIndex) => {
+                const { content, isActive } = getFretContent(stringIndex, fret);
+                return (
+                  <div
+                    key={stringIndex}
+                    className="relative h-12 flex items-center justify-center"
+                  >
                     <div
-                      key={fret}
-                      className="flex-1 min-w-[60px] flex items-center justify-center relative py-3"
-                    >
-                      <div
-                        className={`absolute left-0 w-px h-full ${
-                          fret === 0 ? "bg-primary" : "bg-border"
-                        }`}
-                      />
-                      {isActive && (
-                        <div className="relative z-10 flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground text-sm font-semibold shadow-lg">
-                          {content}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                      className={`absolute left-0 right-0 h-[2px] ${
+                        fret === 0 ? "bg-primary" : "bg-border"
+                      }`}
+                    />
+                    <div
+                      className={`absolute top-0 bottom-0 left-0 w-px bg-border ${
+                        fretIndex === 0 ? "opacity-100" : "opacity-50"
+                      }`}
+                    />
+                    {isActive && (
+                      <div className="relative z-10 flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-lg">
+                        {content}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
