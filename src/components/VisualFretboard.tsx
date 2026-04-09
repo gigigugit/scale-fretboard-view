@@ -62,8 +62,8 @@ export function VisualFretboard({
 
   if (vertical) {
     return (
-      <div className="w-full h-full flex items-center justify-center overflow-auto">
-        <div className="inline-flex flex-col items-center p-4">
+      <div className="w-full h-full flex items-start justify-center overflow-auto p-4">
+        <div className="inline-flex flex-col items-center">
           <div className="flex gap-2">
             <div className="flex flex-row gap-2 items-start justify-center pl-6">
               {displayedStrings.map((openNote, stringIndex) => (

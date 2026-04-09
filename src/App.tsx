@@ -178,9 +178,9 @@ function App() {
       </header>
 
       <div className="flex-1 flex flex-col min-h-0 px-2 md:px-4 pb-2 gap-2">
-        <Card className="flex-1 min-h-0 flex flex-col">
-          <CardContent className="p-2 md:p-4 flex-1 min-h-0 flex flex-col">
-            <div className="flex-1 min-h-0">
+        <Card className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          <CardContent className="p-2 md:p-4 flex-1 min-h-0 flex flex-col overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-auto">
               <VisualFretboard
                 tuning={tuning}
                 scaleNotes={scaleNotes}
