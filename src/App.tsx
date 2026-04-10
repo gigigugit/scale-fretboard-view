@@ -168,270 +168,242 @@ function App() {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <Toaster />
       
-      <header className="text-center space-y-1 py-2 px-2 flex-shrink-0">
-        <h1 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
-          Scale Fretboard Viewer
-        </h1>
-        <p className="text-xs md:text-sm text-muted-foreground">
-          {key} {scale} | {instrument}: {tuningName}
-        </p>
-      </header>
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+        <VisualFretboard
+          tuning={tuning}
+          scaleNotes={scaleNotes}
+          activeDegrees={activeDegrees}
+          displayMode={displayMode}
+          startFret={startFret}
+          endFret={endFret}
+          lowString={lowString}
+          highString={highString}
+          maxFret={maxFret}
+          vertical={verticalLayout}
+        />
+      </div>
 
-      <div className="flex-1 flex flex-col min-h-0 px-2 md:px-4 pb-2 gap-2">
-        <Card className="flex-1 min-h-0 flex flex-col overflow-hidden">
-          <CardContent className="p-2 md:p-4 flex-1 min-h-0 flex flex-col overflow-hidden">
-            <div className="flex-1 min-h-0 overflow-auto">
-              <VisualFretboard
-                tuning={tuning}
-                scaleNotes={scaleNotes}
-                activeDegrees={activeDegrees}
-                displayMode={displayMode}
-                startFret={startFret}
-                endFret={endFret}
-                lowString={lowString}
-                highString={highString}
-                maxFret={maxFret}
-                vertical={verticalLayout}
+      <div className="flex-shrink-0 bg-card border-t border-border shadow-lg">
+        <div className="p-2 space-y-2 max-h-[45vh] overflow-y-auto">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="text-xs font-semibold text-foreground">
+              {key} {scale} | {instrument}: {tuningName}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs px-2"
+              onClick={() => setVerticalLayout(!verticalLayout)}
+            >
+              {verticalLayout ? (
+                <>
+                  <ArrowsHorizontal className="mr-1" size={14} />
+                  H
+                </>
+              ) : (
+                <>
+                  <ArrowsVertical className="mr-1" size={14} />
+                  V
+                </>
+              )}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1.5">
+            <div className="space-y-1">
+              <Label htmlFor="instrument" className="text-[10px]">Instrument</Label>
+              <Select value={instrument} onValueChange={(v) => handleInstrumentChange(v as InstrumentName)}>
+                <SelectTrigger id="instrument" className="h-7 text-[10px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(INSTRUMENTS).map((inst) => (
+                    <SelectItem key={inst} value={inst}>
+                      {inst}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="tuning" className="text-[10px]">Tuning</Label>
+              <Select value={tuningName} onValueChange={setTuningName}>
+                <SelectTrigger id="tuning" className="h-7 text-[10px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(currentInstrument.tunings).map((tuning) => (
+                    <SelectItem key={tuning} value={tuning}>
+                      {tuning}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="key" className="text-[10px]">Key</Label>
+              <Select value={key} onValueChange={setKey}>
+                <SelectTrigger id="key" className="h-7 text-[10px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {KEYS.map((k) => (
+                    <SelectItem key={k} value={k}>
+                      {k}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="scale" className="text-[10px]">Scale</Label>
+              <Select value={scale} onValueChange={(v) => handleScaleChange(v as ScaleName)}>
+                <SelectTrigger id="scale" className="h-7 text-[10px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(SCALES).map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-1">
+            <Button
+              variant={displayMode === "fret" ? "default" : "secondary"}
+              size="sm"
+              className="h-7 text-[10px] px-2"
+              onClick={() => setDisplayMode("fret")}
+            >
+              Fret
+            </Button>
+            <Button
+              variant={displayMode === "note" ? "default" : "secondary"}
+              size="sm"
+              className="h-7 text-[10px] px-2"
+              onClick={() => setDisplayMode("note")}
+            >
+              Note
+            </Button>
+            <Button
+              variant={displayMode === "interval" ? "default" : "secondary"}
+              size="sm"
+              className="h-7 text-[10px] px-2"
+              onClick={() => setDisplayMode("interval")}
+            >
+              Interval
+            </Button>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {ROMAN_NUMERALS.map((numeral, index) => (
+              <div key={numeral} className="flex items-center space-x-1">
+                <Checkbox
+                  id={`degree-${index}`}
+                  checked={activeDegrees[index]}
+                  onCheckedChange={() => toggleDegree(index)}
+                  disabled={index >= scaleLength}
+                  className="h-3 w-3"
+                />
+                <Label
+                  htmlFor={`degree-${index}`}
+                  className={`text-[10px] cursor-pointer ${index >= scaleLength ? "text-muted-foreground" : ""}`}
+                >
+                  {numeral}
+                </Label>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-5 gap-1.5">
+            <div className="space-y-1">
+              <Label htmlFor="start-fret" className="text-[10px]">Start</Label>
+              <Input
+                id="start-fret"
+                type="number"
+                min={0}
+                max={maxFret}
+                value={startFret}
+                onChange={(e) => setStartFret(Math.max(0, Math.min(maxFret, parseInt(e.target.value) || 0)))}
+                className="h-7 text-[10px]"
               />
             </div>
-          </CardContent>
-        </Card>
 
-        <Card className="flex-shrink-0">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold">Controls</CardTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 text-xs px-2"
-                onClick={() => setVerticalLayout(!verticalLayout)}
-              >
-                {verticalLayout ? (
-                  <>
-                    <ArrowsHorizontal className="mr-1" size={14} />
-                    Horizontal
-                  </>
-                ) : (
-                  <>
-                    <ArrowsVertical className="mr-1" size={14} />
-                    Vertical
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-0 max-h-[40vh] overflow-y-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <div className="space-y-1">
-                <Label htmlFor="instrument" className="text-xs">Instrument</Label>
-                <Select value={instrument} onValueChange={(v) => handleInstrumentChange(v as InstrumentName)}>
-                  <SelectTrigger id="instrument" className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(INSTRUMENTS).map((inst) => (
-                      <SelectItem key={inst} value={inst}>
-                        {inst}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="tuning" className="text-xs">Tuning</Label>
-                <Select value={tuningName} onValueChange={setTuningName}>
-                  <SelectTrigger id="tuning" className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(currentInstrument.tunings).map((tuning) => (
-                      <SelectItem key={tuning} value={tuning}>
-                        {tuning}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="key" className="text-xs">Key</Label>
-                <Select value={key} onValueChange={setKey}>
-                  <SelectTrigger id="key" className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {KEYS.map((k) => (
-                      <SelectItem key={k} value={k}>
-                        {k}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="scale" className="text-xs">Scale</Label>
-                <Select value={scale} onValueChange={(v) => handleScaleChange(v as ScaleName)}>
-                  <SelectTrigger id="scale" className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(SCALES).map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-1">
+              <Label htmlFor="end-fret" className="text-[10px]">End</Label>
+              <Input
+                id="end-fret"
+                type="number"
+                min={0}
+                max={maxFret}
+                value={endFret}
+                onChange={(e) => setEndFret(Math.max(startFret, Math.min(maxFret, parseInt(e.target.value) || 0)))}
+                className="h-7 text-[10px]"
+              />
             </div>
 
-            <Separator className="my-2" />
-
-            <div className="space-y-2">
-              <Label className="text-xs">Display Mode</Label>
-              <div className="flex flex-wrap gap-1">
-                <Button
-                  variant={displayMode === "fret" ? "default" : "secondary"}
-                  size="sm"
-                  className="h-7 text-xs px-2"
-                  onClick={() => setDisplayMode("fret")}
-                >
-                  Fret #
-                </Button>
-                <Button
-                  variant={displayMode === "note" ? "default" : "secondary"}
-                  size="sm"
-                  className="h-7 text-xs px-2"
-                  onClick={() => setDisplayMode("note")}
-                >
-                  Note
-                </Button>
-                <Button
-                  variant={displayMode === "interval" ? "default" : "secondary"}
-                  size="sm"
-                  className="h-7 text-xs px-2"
-                  onClick={() => setDisplayMode("interval")}
-                >
-                  Interval
-                </Button>
-              </div>
+            <div className="space-y-1">
+              <Label htmlFor="high-string" className="text-[10px]">High</Label>
+              <Input
+                id="high-string"
+                type="number"
+                min={1}
+                max={stringCount}
+                value={highString}
+                onChange={(e) => setHighString(Math.max(lowString, Math.min(stringCount, parseInt(e.target.value) || 1)))}
+                className="h-7 text-[10px]"
+              />
             </div>
 
-            <Separator className="my-2" />
-
-            <div className="space-y-2">
-              <Label className="text-xs">Scale Degrees</Label>
-              <div className="flex flex-wrap gap-2">
-                {ROMAN_NUMERALS.map((numeral, index) => (
-                  <div key={numeral} className="flex items-center space-x-1">
-                    <Checkbox
-                      id={`degree-${index}`}
-                      checked={activeDegrees[index]}
-                      onCheckedChange={() => toggleDegree(index)}
-                      disabled={index >= scaleLength}
-                      className="h-3 w-3"
-                    />
-                    <Label
-                      htmlFor={`degree-${index}`}
-                      className={`text-xs cursor-pointer ${index >= scaleLength ? "text-muted-foreground" : ""}`}
-                    >
-                      {numeral}
-                    </Label>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-1">
+              <Label htmlFor="low-string" className="text-[10px]">Low</Label>
+              <Input
+                id="low-string"
+                type="number"
+                min={1}
+                max={stringCount}
+                value={lowString}
+                onChange={(e) => setLowString(Math.max(1, Math.min(highString, parseInt(e.target.value) || 1)))}
+                className="h-7 text-[10px]"
+              />
             </div>
 
-            <Separator className="my-2" />
-
-            <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-              <div className="space-y-1">
-                <Label htmlFor="start-fret" className="text-xs">Start</Label>
-                <Input
-                  id="start-fret"
-                  type="number"
-                  min={0}
-                  max={maxFret}
-                  value={startFret}
-                  onChange={(e) => setStartFret(Math.max(0, Math.min(maxFret, parseInt(e.target.value) || 0)))}
-                  className="h-8 text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="end-fret" className="text-xs">End</Label>
-                <Input
-                  id="end-fret"
-                  type="number"
-                  min={0}
-                  max={maxFret}
-                  value={endFret}
-                  onChange={(e) => setEndFret(Math.max(startFret, Math.min(maxFret, parseInt(e.target.value) || 0)))}
-                  className="h-8 text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="high-string" className="text-xs">High</Label>
-                <Input
-                  id="high-string"
-                  type="number"
-                  min={1}
-                  max={stringCount}
-                  value={highString}
-                  onChange={(e) => setHighString(Math.max(lowString, Math.min(stringCount, parseInt(e.target.value) || 1)))}
-                  className="h-8 text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="low-string" className="text-xs">Low</Label>
-                <Input
-                  id="low-string"
-                  type="number"
-                  min={1}
-                  max={stringCount}
-                  value={lowString}
-                  onChange={(e) => setLowString(Math.max(1, Math.min(highString, parseInt(e.target.value) || 1)))}
-                  className="h-8 text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="max-fret" className="text-xs">Max</Label>
-                <Input
-                  id="max-fret"
-                  type="number"
-                  min={12}
-                  max={30}
-                  value={maxFret}
-                  onChange={(e) => setMaxFret(Math.max(12, Math.min(30, parseInt(e.target.value) || 18)))}
-                  className="h-8 text-xs"
-                />
-              </div>
+            <div className="space-y-1">
+              <Label htmlFor="max-fret" className="text-[10px]">Max</Label>
+              <Input
+                id="max-fret"
+                type="number"
+                min={12}
+                max={30}
+                value={maxFret}
+                onChange={(e) => setMaxFret(Math.max(12, Math.min(30, parseInt(e.target.value) || 18)))}
+                className="h-7 text-[10px]"
+              />
             </div>
+          </div>
 
-            <Separator className="my-2" />
-
-            <div className="flex flex-wrap gap-1">
-              <Button onClick={handleCopy} variant="default" size="sm" className="h-7 text-xs">
-                <Copy className="mr-1" size={14} />
-                Copy
-              </Button>
-              <Button onClick={handleDownload} variant="default" size="sm" className="h-7 text-xs">
-                <Download className="mr-1" size={14} />
-                Download
-              </Button>
-              <Button onClick={handleReset} variant="secondary" size="sm" className="h-7 text-xs">
-                <ArrowCounterClockwise className="mr-1" size={14} />
-                Reset
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          <div className="flex flex-wrap gap-1">
+            <Button onClick={handleCopy} variant="default" size="sm" className="h-7 text-[10px] px-2">
+              <Copy className="mr-1" size={12} />
+              Copy
+            </Button>
+            <Button onClick={handleDownload} variant="default" size="sm" className="h-7 text-[10px] px-2">
+              <Download className="mr-1" size={12} />
+              Download
+            </Button>
+            <Button onClick={handleReset} variant="secondary" size="sm" className="h-7 text-[10px] px-2">
+              <ArrowCounterClockwise className="mr-1" size={12} />
+              Reset
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

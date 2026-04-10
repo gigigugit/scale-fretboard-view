@@ -62,13 +62,13 @@ export function VisualFretboard({
 
   if (vertical) {
     return (
-      <div className="w-full h-full flex items-start justify-center overflow-auto p-4">
+      <div className="w-full h-full flex items-start justify-center overflow-auto p-2">
         <div className="inline-flex flex-col items-center">
-          <div className="flex gap-2">
-            <div className="flex flex-row gap-2 items-start justify-center pl-6">
+          <div className="flex gap-3">
+            <div className="flex flex-row gap-3 items-start justify-center pl-8">
               {displayedStrings.map((openNote, stringIndex) => (
-                <div key={stringIndex} className="w-12 flex flex-col items-center">
-                  <div className="text-foreground text-xs font-medium pb-2">
+                <div key={stringIndex} className="w-16 flex flex-col items-center">
+                  <div className="text-foreground text-sm font-bold pb-3">
                     {openNote}
                   </div>
                 </div>
@@ -77,10 +77,10 @@ export function VisualFretboard({
           </div>
 
           {fretRange.map((fret, fretIndex) => (
-            <div key={fret} className="flex flex-row gap-2 min-h-[48px]">
-              <div className="w-6 flex items-center justify-center">
+            <div key={fret} className="flex flex-row gap-3 min-h-[60px]">
+              <div className="w-8 flex items-center justify-center">
                 {isFretMarked(fret) && (
-                  <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-muted/50 text-muted-foreground text-[10px] font-medium">
+                  <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-muted text-muted-foreground text-xs font-bold">
                     {fret}
                   </div>
                 )}
@@ -91,10 +91,10 @@ export function VisualFretboard({
                 return (
                   <div
                     key={stringIndex}
-                    className="relative w-12 flex items-center justify-center"
+                    className="relative w-16 flex items-center justify-center"
                   >
                     <div
-                      className={`absolute top-0 bottom-0 w-[2px] ${
+                      className={`absolute top-0 bottom-0 w-[3px] ${
                         fret === 0 ? "bg-primary" : "bg-border"
                       }`}
                     />
@@ -104,7 +104,7 @@ export function VisualFretboard({
                       }`}
                     />
                     {isActive && (
-                      <div className="relative z-10 flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-lg">
+                      <div className="relative z-10 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground text-base font-bold shadow-xl cursor-pointer active:scale-95 transition-transform touch-manipulation">
                         {content}
                       </div>
                     )}
@@ -119,13 +119,13 @@ export function VisualFretboard({
   }
 
   return (
-    <div className="w-full overflow-x-auto">
-      <div className="inline-block min-w-full">
-        <div className="flex gap-2 p-4">
-          <div className="flex flex-col gap-2 items-end justify-start pt-8">
+    <div className="w-full h-full overflow-auto">
+      <div className="inline-block min-w-full p-2">
+        <div className="flex gap-3">
+          <div className="flex flex-col gap-3 items-end justify-start pt-10">
             {displayedStrings.map((openNote, stringIndex) => (
-              <div key={stringIndex} className="h-12 flex items-center">
-                <div className="text-foreground text-xs font-medium pr-2">
+              <div key={stringIndex} className="h-16 flex items-center">
+                <div className="text-foreground text-sm font-bold pr-3">
                   {openNote}
                 </div>
               </div>
@@ -133,10 +133,10 @@ export function VisualFretboard({
           </div>
 
           {fretRange.map((fret, fretIndex) => (
-            <div key={fret} className="flex flex-col gap-2 min-w-[48px]">
-              <div className="h-6 flex items-center justify-center">
+            <div key={fret} className="flex flex-col gap-3 min-w-[64px]">
+              <div className="h-8 flex items-center justify-center">
                 {isFretMarked(fret) && (
-                  <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-muted/50 text-muted-foreground text-[10px] font-medium">
+                  <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-muted text-muted-foreground text-xs font-bold">
                     {fret}
                   </div>
                 )}
@@ -147,10 +147,10 @@ export function VisualFretboard({
                 return (
                   <div
                     key={stringIndex}
-                    className="relative h-12 flex items-center justify-center"
+                    className="relative h-16 flex items-center justify-center"
                   >
                     <div
-                      className={`absolute left-0 right-0 h-[2px] ${
+                      className={`absolute left-0 right-0 h-[3px] ${
                         fret === 0 ? "bg-primary" : "bg-border"
                       }`}
                     />
@@ -160,7 +160,7 @@ export function VisualFretboard({
                       }`}
                     />
                     {isActive && (
-                      <div className="relative z-10 flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-lg">
+                      <div className="relative z-10 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground text-base font-bold shadow-xl cursor-pointer active:scale-95 transition-transform touch-manipulation">
                         {content}
                       </div>
                     )}
